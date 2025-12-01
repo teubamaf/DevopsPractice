@@ -1,0 +1,23 @@
+- name: Config rasberryPi
+  hosts: raspberry
+  become: yes
+
+
+  tasks:
+    - name: Package Update
+      apt:
+        update_cache: yes
+        upgrade: dist
+      
+    - name: Install soft needed
+      apt:
+        name:
+          - git
+          - docker-compose-plugin
+        state: present
+
+    - name : Check if docker is started 
+      service :
+        name: docker
+        state: started
+        enabled: yes
