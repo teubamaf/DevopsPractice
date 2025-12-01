@@ -1,0 +1,25 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Check Code
+        uses: actions/checkout@v4
+      
+      - name: Build Docker image
+        run: docker build -t pyfastapi:${{ github.sha }} .
+      
+      - name: Run container and test
+        run: |
+          docker run -d -p 8000:8000 --name test-app pyfastapi:${{ github.sha }}
+          sleep 5
+          curl --fail http://localhost:8000 || exit 1
+          docker stop test-app
